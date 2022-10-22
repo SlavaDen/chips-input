@@ -1,1 +1,1 @@
-export * from './ChipsInput'
+export * from './ChipsInput';
