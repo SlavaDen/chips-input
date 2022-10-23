@@ -1,11 +1,13 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { ChipInput, ChipsWrapper } from 'components';
-import { ChipsInputProps } from './ChipsInput.types';
 import { quotesCounter } from 'helpers';
+import { MESSAGES } from 'constants/messages';
+import { ChipsInputProps } from './ChipsInput.types';
 import styles from './ChipsInput.module.css';
 
 const ChipsInputProto = ({ chips, setChips }: ChipsInputProps) => {
   const [chipsArray, setChipsArray] = useState<string[]>(chips.split(','));
+  const [selectedIndexes, setSelectedIndexes] = useState<number[]>([]);
   const [error, setError] = useState<string>('');
 
   const addChip = useCallback(
@@ -14,11 +16,11 @@ const ChipsInputProto = ({ chips, setChips }: ChipsInputProps) => {
         | React.FocusEvent<HTMLInputElement>
         | React.KeyboardEvent<HTMLInputElement>
     ) => {
-      if (e.currentTarget.value !== '') {
-        const inputValue = e.currentTarget.value;
+      const inputValue = e.currentTarget.value;
+      if (inputValue && !/^[,\s]+$/.test(inputValue)) {
         const count = quotesCounter(inputValue);
         if (count % 2 !== 0) {
-          setError('Закройте кавычки с двух сторон');
+          setError(MESSAGES.CLOSE_QUOTES);
         } else {
           if (e.type === 'keyup') {
             setChipsArray([...chipsArray, inputValue.slice(0, -1)]);
@@ -42,7 +44,7 @@ const ChipsInputProto = ({ chips, setChips }: ChipsInputProps) => {
         .filter((chip) => chip !== '');
       setChipsArray(editedChips);
     },
-    [chipsArray]
+    [chipsArray, setChipsArray]
   );
 
   const deleteChip = useCallback(
@@ -50,12 +52,40 @@ const ChipsInputProto = ({ chips, setChips }: ChipsInputProps) => {
       const сhips = chipsArray.filter((_, i) => i !== index);
       setChipsArray(сhips);
     },
-    [chipsArray]
+    [chipsArray, setChipsArray]
   );
+
+  const selectChip = useCallback(
+    (index: number) => {
+      if (selectedIndexes.some((selectedIndex) => selectedIndex === index)) {
+        const indexes = selectedIndexes.filter(
+          (selectedIndex) => selectedIndex !== index
+        );
+        setSelectedIndexes(indexes);
+      } else {
+        setSelectedIndexes([...selectedIndexes, index]);
+      }
+    },
+    [setSelectedIndexes, selectedIndexes]
+  );
+
+  const deleteSelectedChips = useCallback(() => {
+    if (selectedIndexes.length) {
+      setChipsArray(chipsArray.filter((_, i) => selectedIndexes.includes(i)));
+      setSelectedIndexes([]);
+    }
+  }, [setChipsArray, chipsArray, selectedIndexes, setSelectedIndexes]);
 
   useEffect(() => {
     setChips(chipsArray.filter((chip) => chip.length).join(','));
   }, [chipsArray, setChips]);
+
+  // TODO: Изучить варианты реализации
+  // document.addEventListener('keyup', function (e) {
+  //   if (e.key === 'Backspace') {
+  //     deleteSelectedChips();
+  //   }
+  // });
 
   return (
     <>
@@ -70,10 +100,14 @@ const ChipsInputProto = ({ chips, setChips }: ChipsInputProps) => {
             chip={chip}
             index={i}
             chips={chipsArray}
+            selected={selectedIndexes.some(
+              (selectedIndex) => selectedIndex === i
+            )}
             setChips={setChipsArray}
             setError={setError}
             updateChip={updateChip}
             deleteChip={deleteChip}
+            selectChip={selectChip}
           />
         ))}
       </ChipsWrapper>

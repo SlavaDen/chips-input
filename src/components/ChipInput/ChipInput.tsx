@@ -2,15 +2,18 @@ import { quotesCounter } from 'helpers';
 import React, { memo, useCallback } from 'react';
 import { ChipInputProps } from './ChipInput.types';
 import styles from './ChipInput.module.css';
+import { MESSAGES } from 'constants/messages';
 
 const ChipInputProto = ({
   chip,
   index,
   chips,
+  selected,
   setChips,
   setError,
   updateChip,
   deleteChip,
+  selectChip,
 }: ChipInputProps) => {
   const onUpdateChip = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,14 +64,21 @@ const ChipInputProto = ({
         setChips(chipsSlice);
         setError('');
       } else {
-        setError('Закройте кавычки с двух сторон');
+        setError(MESSAGES.CLOSE_QUOTES);
       }
     },
     [chips, index, setChips, setError]
   );
 
+  const onSelectChip = useCallback(() => {
+    selectChip(index);
+  }, [selectChip, index]);
+
   return (
-    <li className={styles.chip}>
+    <li
+      className={`${styles.chip} ${selected && styles.selectedChip}`}
+      onClick={onSelectChip}
+    >
       <input
         value={chip}
         onChange={onUpdateChip}
