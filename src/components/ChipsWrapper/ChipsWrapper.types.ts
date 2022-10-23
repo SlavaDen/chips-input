@@ -1,8 +1,10 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 
 export interface ChipsWrapperProps {
   children: React.ReactNode;
   chips: string[];
-  setChips: Dispatch<SetStateAction<string[]>>
-  setError: Dispatch<SetStateAction<string>>
+  addChip: (e:
+    | React.FocusEvent<HTMLInputElement>
+    | React.KeyboardEvent<HTMLInputElement>)=>void;
+  deleteChip: (index: number)=> void;
 }

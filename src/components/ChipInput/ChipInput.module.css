@@ -1,0 +1,28 @@
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  font-size: 14px;
+  border-radius: 4px;
+  margin: 4px;
+  background: #c9e4fc;
+}
+
+.chipInput {
+  background-color: transparent;
+  border-color: transparent;
+  color: #184271;
+  font-weight: bolder;
+  width: auto;
+}
+
+.chipInput:focus {
+  outline: none;
+}
+
+.closeIcon {
+  margin-left: 6px;
+  color: #5981a9;
+  cursor: pointer;
+}

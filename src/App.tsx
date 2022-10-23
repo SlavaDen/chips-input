@@ -13,9 +13,6 @@ function App() {
       <div>
         <ChipsInput chips={value} setChips={setValue} />
       </div>
-      {
-        //TODO: Добавить стили
-      }
       <div>Строковое представление: {value}</div>
     </div>
   );
